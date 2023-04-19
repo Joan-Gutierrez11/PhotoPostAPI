@@ -58,5 +58,9 @@ class User extends Authenticatable implements JWTSubject
             ? str_replace(env('APP_URL'), env('APP_URL') . ':8000',  \Storage::url($value)) 
             : \Storage::url($value) ;
     }
+
+    public function posts(){
+        return $this->hasMany(Post::class);
+    }
     
 }

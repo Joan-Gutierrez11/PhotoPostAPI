@@ -10,6 +10,12 @@ class Post extends Model
     use HasFactory;
 
     protected $hidden = [
-        'user_id'
+        'user_id',
+        'user'
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
 }

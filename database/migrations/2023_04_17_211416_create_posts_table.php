@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('title', 50);
             $table->text('description')->nullable();
             $table->string('image', 2050)->nullable();
-            $table->bigInteger('user_id')->unsigned()->change();
+            $table->bigInteger('user_id')->unsigned();
 
             // Foreign keys
-            $table->foreignId('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

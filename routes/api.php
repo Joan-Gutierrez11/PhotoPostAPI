@@ -30,10 +30,11 @@ Route::prefix('/user')->group(function(){
     Route::post('/change-password', [App\Http\Controllers\Api\UserController::class, 'changePassword']);
     Route::put('/update', [App\Http\Controllers\Api\UserController::class, 'updateUser']);
     Route::delete('/delete', [App\Http\Controllers\Api\UserController::class, 'deleteUser']);
+    Route::get('/posts', [App\Http\Controllers\Api\UserController::class, 'getPosts']);
 });
 
 Route::prefix('/posts')->group(function(){
     Route::get('', [App\Http\Controllers\Api\PostController::class, 'index']);
+    Route::get('/{post}', [App\Http\Controllers\Api\PostController::class, 'show']);
     Route::post('', [App\Http\Controllers\Api\PostController::class, 'store']);
-    Route::get('user-posts', [App\Http\Controllers\Api\PostController::class, 'getPostByUser']);
 });

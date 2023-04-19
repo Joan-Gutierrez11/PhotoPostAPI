@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+/**
+ * Summary of AuthController
+ */
 class AuthController extends Controller
 {
     //
@@ -59,6 +62,11 @@ class AuthController extends Controller
         return response(compact('token', 'type'), 200);
     }
 
+    /**
+     * Return user by jwt token      
+     * @param Request $request send by client
+     * @return \Illuminate\Contracts\Auth\Authenticatable|null User that identifies by jwt token
+     */
     public function getUser(Request $request){
         return Auth::guard('api')->user();
     }

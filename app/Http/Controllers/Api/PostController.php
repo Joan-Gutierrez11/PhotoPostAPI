@@ -24,7 +24,20 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = \Auth::guard('api')->user();
+        if(!$user)
+            return response([
+                'message' => 'User not logged. '
+            ], 401);
+
+
+        Post::create(array_merge(
+            $request->all(),
+            ['user_id' => $user->id]
+        ));
+        return response([
+            'message' => 'Post created'
+        ], 201);
     }
 
     /**
@@ -32,15 +45,11 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
-    }
-
-    public function getPostByUser(){
-        $user = \Auth::guard('api')->user();
-        if(!$user)
-            return response([ 'message' => 'User not logged. Please login for get your posts' ], 401);
-        
-        return Post::where('user_id', $user->id)->get();
+        $user_owner = $post->user->only('username', 'email');   
+        return response(array_merge(
+            $post->toArray(),
+            compact('user_owner')
+        ), 200);
     }
 
     /**
@@ -48,7 +57,14 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $user = \Auth::guard('api')->user();
+        if(!$user)
+            return response([
+                'message' => 'User not logged. '
+            ], 401);
+
+        $post->update($request->all());
+        return $post;
     }
 
     /**

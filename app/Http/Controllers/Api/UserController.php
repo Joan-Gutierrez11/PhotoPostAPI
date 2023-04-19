@@ -68,6 +68,12 @@ class UserController extends Controller
         return response(compact('user', 'state'), 200);
     }
 
+    public function getPosts(Request $request){
+        $user = Auth::guard('api')->user();
+        if(!$user)
+            return response([ 'message' => 'User not found'], 401);
+        return $user->posts;
+    }
 
     /**
      * 
