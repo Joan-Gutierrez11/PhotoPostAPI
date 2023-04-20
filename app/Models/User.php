@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Utils\PathUrlGetter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,7 +12,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, PathUrlGetter;
 
     /**
      * The attributes that are mass assignable.
@@ -54,9 +55,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function getProfileImgAttribute($value){
-        return (env('APP_DEBUG')=='true') 
-            ? str_replace(env('APP_URL'), env('APP_URL') . ':8000',  \Storage::url($value)) 
-            : \Storage::url($value) ;
+        return $this->getUrl($value) ;
     }
 
     public function posts(){

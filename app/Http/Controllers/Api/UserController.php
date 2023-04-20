@@ -45,18 +45,15 @@ class UserController extends Controller
             'profile_img' => 'image|nullable'
         ]);
 
-        if($validator->fails()){
+        if($validator->fails())
             return $validator->errors();
-        }
 
         $validate_data = $validator->validate();
         $path_image = $this->storeProfileImg($request, $user, 'profile_img');
+        if($path_image)
+            $validate_data['profile_img'] = $path_image;
 
-
-        $user->update(array_merge(
-            $validate_data, 
-            ['profile_img'=> $path_image]
-        ));
+        $user->update($validate_data);
         $state = 'Update successfully';
         return response(compact('user', 'state'), 200);
     }

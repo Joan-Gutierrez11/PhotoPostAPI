@@ -26,18 +26,28 @@ class PostController extends Controller
     {
         $user = \Auth::guard('api')->user();
         if(!$user)
-            return response([
-                'message' => 'User not logged. '
-            ], 401);
+            return response([ 'message' => 'User not logged. ' ], 401);
+
+        $validator = \Validator::make($request->all(), [
+            'title' => 'max:50', 'description' => 'nullable', 'image' => 'image|nullable',
+        ]);
+
+        if($validator->fails())
+            return $validator->errors();
+
+        $validate_data = $validator->validate();
 
 
-        Post::create(array_merge(
-            $request->all(),
-            ['user_id' => $user->id]
+        $post = Post::create(array_merge(
+            $validate_data,
+            [ 'user_id' => $user->id ]
         ));
-        return response([
-            'message' => 'Post created'
-        ], 201);
+
+        $filename = sprintf("%d/%s", $post->id, $post->title);
+        $post->image = $this->storeImage($request, $filename,'image');
+        $post->save();
+
+        return response([ 'message' => 'Post created' ], 201);
     }
 
     /**
@@ -46,6 +56,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
         $user_owner = $post->user->only('username', 'email');   
+
         return response(array_merge(
             $post->toArray(),
             compact('user_owner')
@@ -59,11 +70,23 @@ class PostController extends Controller
     {
         $user = \Auth::guard('api')->user();
         if(!$user)
-            return response([
-                'message' => 'User not logged. '
-            ], 401);
+            return response(['message' => 'User not logged.'], 401);
 
-        $post->update($request->all());
+        $validator = \Validator::make($request->all(), [
+            'title' => 'nullable|max:50', 'description' => 'nullable', 'image' => 'image|nullable',
+        ]);
+
+        if($validator->fails())
+            return $validator->errors();
+
+        $validate_data = $validator->validate();
+        
+        $filename = sprintf("%s/%d-%s", $user->username, $post->id, $post->title);
+        $path_image_post = $this->storeImage($request, $filename, 'image');
+        if($path_image_post)
+            $validate_data['image'] = $path_image_post;
+
+        $post->update($validate_data);
         return $post;
     }
 
@@ -73,5 +96,15 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         //
+    }
+
+    private function storeImage(Request $request, string $filename, string $field_name){
+        if(!$request->hasFile($field_name) || !$filename)
+            return;
+
+        $file = $request->file($field_name);
+        $new_name = $filename . '.' . $file->extension();
+        $path = $file->storeAs('post-image', $new_name);
+        return $path;
     }
 }

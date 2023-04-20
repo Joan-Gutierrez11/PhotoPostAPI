@@ -33,8 +33,9 @@ Route::prefix('/user')->group(function(){
     Route::get('/posts', [App\Http\Controllers\Api\UserController::class, 'getPosts']);
 });
 
-Route::prefix('/posts')->group(function(){
-    Route::get('', [App\Http\Controllers\Api\PostController::class, 'index']);
-    Route::get('/{post}', [App\Http\Controllers\Api\PostController::class, 'show']);
-    Route::post('', [App\Http\Controllers\Api\PostController::class, 'store']);
+Route::prefix('/posts')->controller(App\Http\Controllers\Api\PostController::class)->group(function(){
+    Route::get('', 'index');
+    Route::get('/{post}', 'show');
+    Route::post('', 'store');
+    Route::put('/{post}', 'update');
 });
